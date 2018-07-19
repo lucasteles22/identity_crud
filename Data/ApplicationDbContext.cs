@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -13,5 +13,6 @@ namespace UserRegistration.Data
             : base(options)
         {
         }
+        public DbSet<User> Users { get; set; }
     }
 }

@@ -1,6 +1,9 @@
 # Autosave files
 *~
 
+# Sqlite
+*.db
+
 # build
 obj/
 Obj/

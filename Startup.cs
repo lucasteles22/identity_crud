@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UserRegistration.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using AutoMapper;
 
 namespace UserRegistration
 {
@@ -57,6 +58,8 @@ namespace UserRegistration
                 options.LogoutPath = $"/Identity/Account/Logout";
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
             });
+
+            services.AddAutoMapper();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

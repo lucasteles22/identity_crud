@@ -4,6 +4,8 @@ namespace UserRegistration.ViewModels
 {
     public class UserViewModel
     {
+        public string Id { get; set; }
+
         [Required]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }

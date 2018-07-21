@@ -2,21 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using UserRegistration.Data;
 using UserRegistration.Models;
+using UserRegistration.ViewModels;
 
 namespace UserRegistration.Controllers
 {
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: Users
@@ -39,29 +43,6 @@ namespace UserRegistration.Controllers
             {
                 return NotFound();
             }
-
-            return View(user);
-        }
-
-        // GET: Users/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Users/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,Document,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
             return View(user);
         }
 
@@ -78,7 +59,8 @@ namespace UserRegistration.Controllers
             {
                 return NotFound();
             }
-            return View(user);
+            UserViewModel viewModel = _mapper.Map<User, UserViewModel>(user);
+            return View(viewModel);
         }
 
         // POST: Users/Edit/5
@@ -86,9 +68,9 @@ namespace UserRegistration.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,Document,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
+        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,Document,Id,Email")] UserViewModel viewModel)
         {
-            if (id != user.Id)
+            if (id != viewModel.Id)
             {
                 return NotFound();
             }
@@ -97,12 +79,14 @@ namespace UserRegistration.Controllers
             {
                 try
                 {
+                    User user = await _context.Users.FindAsync(id);
+                    _mapper.Map<UserViewModel, User>(viewModel, user);
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!UserExists(viewModel.Id))
                     {
                         return NotFound();
                     }
@@ -113,7 +97,7 @@ namespace UserRegistration.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(viewModel);
         }
 
         // GET: Users/Delete/5

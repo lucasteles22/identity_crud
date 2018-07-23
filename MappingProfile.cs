@@ -8,7 +8,9 @@ namespace UserRegistration
     {
         public MappingProfile()
         {
-            CreateMap<User, UserViewModel>();
+            CreateMap<User, UserViewModel>()
+                .ForMember(x => x.ConfirmPassword, opt => opt.Ignore())
+                .ForMember(x => x.Password, opt => opt.Ignore());
             CreateMap<UserViewModel, User>();
         }
     }

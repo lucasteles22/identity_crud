@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,13 @@ namespace UserRegistration.Controllers
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
-        public UsersController(ApplicationDbContext context, IMapper mapper)
+        public UsersController(ApplicationDbContext context, UserManager<User> userManager, IMapper mapper)
         {
             _context = context;
+            _userManager = userManager;
             _mapper = mapper;
         }
 
@@ -68,7 +71,7 @@ namespace UserRegistration.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,Document,Id,Email")] UserViewModel viewModel)
+        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,Document,Id,Email,Password,ConfirmPassword")] UserViewModel viewModel)
         {
             if (id != viewModel.Id)
             {
@@ -80,7 +83,8 @@ namespace UserRegistration.Controllers
                 try
                 {
                     User user = await _context.Users.FindAsync(id);
-                    _mapper.Map<UserViewModel, User>(viewModel, user);
+                    _mapper.Map(viewModel, user);
+                    await _userManager.CheckPasswordAsync(user, viewModel.Password);
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }

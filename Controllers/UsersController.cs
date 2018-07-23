@@ -83,7 +83,7 @@ namespace UserRegistration.Controllers
                 {
                     User user = await _context.Users.FindAsync(id);
                     _mapper.Map(viewModel, user);
-                    await _userManager.CheckPasswordAsync(user, viewModel.Password);
+                    user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, viewModel.Password);
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }

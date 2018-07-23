@@ -30,7 +30,11 @@ namespace UserRegistration
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
+            string defaultConnection = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
+            string connectionString = String.IsNullOrEmpty(defaultConnection) ?
+                                            Configuration.GetConnectionString("DefaultConnection") :
+                                            defaultConnection;
+            
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.

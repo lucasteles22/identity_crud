@@ -59,6 +59,8 @@ namespace UserRegistration
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
             });
 
+            services.AddRouting(opt => opt.LowercaseUrls = true);
+
             services.AddAutoMapper();
         }
 
